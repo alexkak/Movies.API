@@ -7,7 +7,7 @@ using Movies.Contracts.Requests;
 namespace Movies.API.Controllers
 {
     [ApiController]
-    [Route("api")]
+    //[Route("api")]
     public class MoviesController : ControllerBase
     {
         private readonly IMovieRepository _movieRepository;
@@ -17,12 +17,12 @@ namespace Movies.API.Controllers
             _movieRepository = movieRepository;
         }
 
-        [HttpPost("movies")]
+        [HttpPost(ApiEndpoints.Movies.Create)]
         public async Task<IActionResult> Create([FromBody]CreateMovieRequest request)
         {
             var movie = request.MapToMovie();
             await _movieRepository.CreateAsync(movie);
-            return Created($"/api/movies/{movie.Id}", movie); // I shouldn't return "movie" but rather map "movie" to a new MovieResponse object and return that. Only accept and return contracts
+            return Created($"/{ApiEndpoints.Movies.Create}/{movie.Id}", movie); // I shouldn't return "movie" but rather map "movie" to a new MovieResponse object and return that. Only accept and return contracts
         }
     }
 }
