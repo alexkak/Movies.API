@@ -22,6 +22,12 @@ namespace Movies.Application.Repositories
             return Task.FromResult(movie);
         }
 
+        public Task<Movie?> GetBySlugAsync(string slug)
+        {
+            var movie = _movies.SingleOrDefault(x => x.Slug == slug);
+            return Task.FromResult(movie);
+        }
+
         public Task<IEnumerable<Movie>> GetAllAsync()
         {
             return Task.FromResult(_movies.AsEnumerable());
@@ -45,6 +51,5 @@ namespace Movies.Application.Repositories
             var movieRemoved = removedCount > 0;
             return Task.FromResult(movieRemoved);
         }
-        
     }
 }
