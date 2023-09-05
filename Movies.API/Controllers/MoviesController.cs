@@ -22,7 +22,9 @@ namespace Movies.API.Controllers
         {
             var movie = request.MapToMovie();
             await _movieRepository.CreateAsync(movie);
-            return Created($"/{ApiEndpoints.Movies.Create}/{movie.Id}", movie); // I shouldn't return "movie" but rather map "movie" to a new MovieResponse object and return that. Only accept and return contracts
+            return CreatedAtAction(nameof(Get), new { id = movie.Id }, movie);
+            //return Created($"/{ApiEndpoints.Movies.Create}/{movie.Id}", movie); 
+            // I shouldn't return "movie" but rather map "movie" to a new MovieResponse object and return that. Only accept and return contracts
         }
 
         [HttpGet(ApiEndpoints.Movies.Get)]
