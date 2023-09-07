@@ -34,6 +34,14 @@ namespace Movies.Application.Database
             create unique index movies_slug_idx
             on dbo.movies (id)
             """);
+
+            await connection.ExecuteAsync("""
+                IF OBJECT_ID(N'dbo.genres', N'U') IS NULL
+                CREATE TABLE dbo.genres (
+                movieId uniqueidentifier FOREIGN KEY REFERENCES movies(id),
+                name varchar(max) NOT NULL
+            );
+            """);
         }
     }
 }
