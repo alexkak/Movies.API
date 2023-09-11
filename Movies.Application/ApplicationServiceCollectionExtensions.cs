@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Movies.Application.Database;
 using Movies.Application.Repositories;
 using Movies.Application.Services;
@@ -17,6 +18,7 @@ namespace Movies.Application
         {
             services.AddSingleton<IMovieRepository, MovieRepository>();
             services.AddSingleton<IMoviesService, MoviesService>();
+            services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
             return services;
         }
 
