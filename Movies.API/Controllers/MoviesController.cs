@@ -19,21 +19,23 @@ namespace Movies.API.Controllers
         }
 
         [HttpPost(ApiEndpoints.Movies.Create)]
-        public async Task<IActionResult> Create([FromBody]CreateMovieRequest request)
+        public async Task<IActionResult> Create([FromBody]CreateMovieRequest request,
+            CancellationToken token)
         {
             var movie = request.MapToMovie();
-            await _movieService.CreateAsync(movie);
+            await _movieService.CreateAsync(movie, token);
             return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie);
             //return Created($"/{ApiEndpoints.Movies.Create}/{movie.Id}", movie); 
             // I shouldn't return "movie" but rather map "movie" to a new MovieResponse object and return that. Only accept and return contracts
         }
 
         [HttpGet(ApiEndpoints.Movies.Get)]
-        public async Task<IActionResult> Get([FromRoute] string idOrSlug)
+        public async Task<IActionResult> Get([FromRoute] string idOrSlug,
+            CancellationToken token)
         { 
             var movie = Guid.TryParse(idOrSlug, out var id)
-                ? await _movieService.GetByIdAsync(id)
-                : await _movieService.GetBySlugAsync(idOrSlug);
+                ? await _movieService.GetByIdAsync(id, token)
+                : await _movieService.GetBySlugAsync(idOrSlug, token);
             if (movie is null)
             {
                 return NotFound();
@@ -44,9 +46,9 @@ namespace Movies.API.Controllers
         }
 
         [HttpGet(ApiEndpoints.Movies.GetAll)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(CancellationToken token)
         { 
-            var movies = await _movieService.GetAllAsync();
+            var movies = await _movieService.GetAllAsync(token);
 
             var moviesResponse = movies.MapToResponse();
             return Ok(moviesResponse);
@@ -54,10 +56,11 @@ namespace Movies.API.Controllers
 
         [HttpPut(ApiEndpoints.Movies.Update)]
         public async Task<IActionResult> Update([FromRoute] Guid id,
-            [FromBody] UpdateMovieRequest request)
+            [FromBody] UpdateMovieRequest request,
+            CancellationToken token)
         {
             var movie = request.MapToMovie(id);
-            var updatedMovie = await _movieService.UpdateAsync(movie);
+            var updatedMovie = await _movieService.UpdateAsync(movie, token);
 
             if (updatedMovie is null)
             {
@@ -69,9 +72,10 @@ namespace Movies.API.Controllers
         }
 
         [HttpDelete(ApiEndpoints.Movies.Delete)]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id,
+            CancellationToken token)
         { 
-            var deleted = await _movieService.DeleteByIdAsync(id);
+            var deleted = await _movieService.DeleteByIdAsync(id, token);
             if (!deleted)
             {
                 return NotFound();
