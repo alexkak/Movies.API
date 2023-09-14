@@ -1,12 +1,12 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
+using System.Text;
+using Movies.Contracts.Requests;
 
-namespace Identity.Api.Controllers
+namespace Movies.API.Controllers
 {
     public class IdentityController : ControllerBase
     {
@@ -16,7 +16,7 @@ namespace Identity.Api.Controllers
         [HttpPost("token")]
         public IActionResult GenerateToken(
             [FromBody] TokenGenerationRequest request)
-        { 
+        {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(TokenSecret);
 
@@ -47,7 +47,7 @@ namespace Identity.Api.Controllers
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.Add(TokenLifetime),
-                Issuer = "https://localhost:7293/",
+                Issuer = "https://localhost:44318/",
                 Audience = "https://localhost:44318/",
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

@@ -8,6 +8,7 @@ using Movies.Contracts.Requests;
 
 namespace Movies.API.Controllers
 {
+    [Authorize]
     [ApiController]
     //[Route("api")]
     public class MoviesController : ControllerBase
@@ -30,6 +31,7 @@ namespace Movies.API.Controllers
             // I shouldn't return "movie" but rather map "movie" to a new MovieResponse object and return that. Only accept and return contracts
         }
 
+        [AllowAnonymous]
         [HttpGet(ApiEndpoints.Movies.Get)]
         public async Task<IActionResult> Get([FromRoute] string idOrSlug,
             CancellationToken token)
@@ -46,6 +48,7 @@ namespace Movies.API.Controllers
             return Ok(response);
         }
 
+        [AllowAnonymous]
         [HttpGet(ApiEndpoints.Movies.GetAll)]
         public async Task<IActionResult> GetAll(CancellationToken token)
         { 
