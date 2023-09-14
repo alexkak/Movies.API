@@ -8,7 +8,6 @@ using Movies.Contracts.Requests;
 
 namespace Movies.API.Controllers
 {
-    [Authorize]
     [ApiController]
     //[Route("api")]
     public class MoviesController : ControllerBase
@@ -20,6 +19,7 @@ namespace Movies.API.Controllers
             _movieService = movieService;
         }
 
+        [Authorize(AuthConstants.AdminUserPolicyName)]
         [HttpPost(ApiEndpoints.Movies.Create)]
         public async Task<IActionResult> Create([FromBody]CreateMovieRequest request,
             CancellationToken token)
@@ -31,7 +31,6 @@ namespace Movies.API.Controllers
             // I shouldn't return "movie" but rather map "movie" to a new MovieResponse object and return that. Only accept and return contracts
         }
 
-        [AllowAnonymous]
         [HttpGet(ApiEndpoints.Movies.Get)]
         public async Task<IActionResult> Get([FromRoute] string idOrSlug,
             CancellationToken token)
@@ -48,7 +47,6 @@ namespace Movies.API.Controllers
             return Ok(response);
         }
 
-        [AllowAnonymous]
         [HttpGet(ApiEndpoints.Movies.GetAll)]
         public async Task<IActionResult> GetAll(CancellationToken token)
         { 
@@ -58,6 +56,7 @@ namespace Movies.API.Controllers
             return Ok(moviesResponse);
         }
 
+        [Authorize(AuthConstants.AdminUserPolicyName)]
         [HttpPut(ApiEndpoints.Movies.Update)]
         public async Task<IActionResult> Update([FromRoute] Guid id,
             [FromBody] UpdateMovieRequest request,
@@ -75,6 +74,7 @@ namespace Movies.API.Controllers
             return Ok(response);
         }
 
+        [Authorize(AuthConstants.AdminUserPolicyName)]
         [HttpDelete(ApiEndpoints.Movies.Delete)]
         public async Task<IActionResult> Delete([FromRoute] Guid id,
             CancellationToken token)
