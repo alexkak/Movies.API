@@ -42,6 +42,15 @@ namespace Movies.Application.Database
                 name varchar(max) NOT NULL
             );
             """);
+
+            await connection.ExecuteAsync("""
+            IF OBJECT_ID(N'dbo.ratings', N'U') IS NULL
+            create table dbo.ratings(
+            userid uniqueidentifier,
+            movieid uniqueidentifier FOREIGN KEY REFERENCES movies(id),
+            rating int not null
+            primary key (userid, movieid));
+            """);
         }
     }
 }
