@@ -12,6 +12,29 @@ namespace Movies.Application.Repositories
     public class RatingRepository : IRatingRepository
     {
         private readonly IDbConnectionFactory _dbConnectionFactory;
+
+        public RatingRepository(IDbConnectionFactory dbConnectionFactory)
+        {
+            _dbConnectionFactory = dbConnectionFactory;
+        }
+
+        public async Task<bool> RatingMovieAsync(Guid movieId, int rating, Guid userId, CancellationToken token = default)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
+            var result = await connection.ExecuteAsync(new CommandDefinition("""
+                INSERT INTO ratings (userid, movieid, rating)
+                VALUES (@userId, @movieId, @rating);
+
+                IF @@ROWCOUNT = 0 
+                BEGIN
+                    UPDATE ratings
+                    SET rating = @rating
+                    WHERE userid = @userId AND movieid = @movieId;
+                END
+                """, new { userId, movieId, rating}, cancellationToken: token));
+
+            return result > 0;
+        }
         public async Task<float?> GetRatingAsync(Guid movieId, CancellationToken token = default)
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
