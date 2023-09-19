@@ -4,6 +4,7 @@ using Movies.API.Auth;
 using Movies.Application.Repositories;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
+using Movies.API.Mapping;
 
 namespace Movies.API.Controllers
 {
@@ -35,6 +36,16 @@ namespace Movies.API.Controllers
             var userId = HttpContext.GetUserId();
             var result = await _ratingService.DeleteRatingAsync(id, userId!.Value, token);
             return result ? Ok() : NotFound();
+        }
+
+        [Authorize]
+        [HttpGet(ApiEndpoints.Ratings.GetUserRatings)]
+        public async Task<IActionResult> GetUserRatings(CancellationToken token = default)
+        { 
+            var userId = HttpContext.GetUserId();
+            var ratings = await _ratingService.GetRatingForUserAsync(userId!.Value, token);
+            var ratingsResponse = ratings.MapToResponse();
+            return Ok(ratingsResponse);
         }
     }
 }
