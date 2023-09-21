@@ -112,7 +112,7 @@ namespace Movies.Application.Repositories
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
-            var orderClause = string.Empty;
+            var orderClause = "order by m.id"; //string.Empty;
             if (options.SortField is not null)
             {
                 orderClause = $"""
@@ -136,11 +136,15 @@ namespace Movies.Application.Repositories
                 where (@title is null or m.title like @title)
                 and (@yearofrelease is null or m.yearofrelease = @yearofrelease)
                 group by m.id,m.slug,m.title,m.yearofrelease,myr.rating {orderClause}
+                OFFSET @pageOffset ROWS 
+                FETCH NEXT @pageSize ROWS ONLY
                 """, new 
             { 
                 userId = options.UserId,
                 title = '%' + options.Title + '%',
-                yearofrelease = options.YearOfRelease
+                yearofrelease = options.YearOfRelease,
+                pageSize = options.PageSize,
+                pageOffset = (options.Page - 1) * options.PageSize
             }, cancellationToken: token));
 
             return result.Select(x => new Movie
@@ -204,6 +208,20 @@ namespace Movies.Application.Repositories
                 select count(*) from movies where id = @id
                 """, new { id }, cancellationToken: token));
 
+        }
+
+        public async Task<int> GetCountAsync(string? title, int? yearOfRelease, CancellationToken token)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
+            return await connection.QuerySingleAsync<int>(new CommandDefinition("""
+                select count(id) from movies
+                where (@title is null or title like @title)
+                and (@yearofrelease is null or yearofrelease = @yearofrelease) 
+                """, new
+            { 
+                title = '%' + title + '%',
+                yearOfRelease,
+            }, cancellationToken: token));
         }
     }
 }

@@ -70,5 +70,10 @@ namespace Movies.Application.Services
         {
             return _movieRepository.DeleteByIdAsync(id, token);
         }
+
+        public Task<int> GetCountAsync(string? title, int? yearOfRelease, CancellationToken token)
+        {
+            return _movieRepository.GetCountAsync(title, yearOfRelease, token);
+        }
     }
 }
