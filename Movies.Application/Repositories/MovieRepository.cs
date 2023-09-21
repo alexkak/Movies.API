@@ -112,7 +112,15 @@ namespace Movies.Application.Repositories
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
-            var result = await connection.QueryAsync(new CommandDefinition("""
+            var orderClause = string.Empty;
+            if (options.SortField is not null)
+            {
+                orderClause = $"""
+                    order by m.{options.SortField} {(options.SortOrder == SortOrder.Ascending ? "asc" : "desc")}
+                    """;
+            }
+
+            var result = await connection.QueryAsync(new CommandDefinition($"""
                 select m.*, 
                         (
                             SELECT STRING_AGG( g.name, ',') 
@@ -127,7 +135,7 @@ namespace Movies.Application.Repositories
                     and myr.userid = @userId
                 where (@title is null or m.title like @title)
                 and (@yearofrelease is null or m.yearofrelease = @yearofrelease)
-                group by m.id,m.slug,m.title,m.yearofrelease,myr.rating
+                group by m.id,m.slug,m.title,m.yearofrelease,myr.rating {orderClause}
                 """, new 
             { 
                 userId = options.UserId,
