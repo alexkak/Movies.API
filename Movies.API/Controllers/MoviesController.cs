@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies.API.Auth;
 using Movies.API.Mapping;
@@ -11,6 +12,7 @@ using Movies.Contracts.Responses;
 namespace Movies.API.Controllers
 {
     [ApiController]
+    [ApiVersion(1.0)]
     //[Route("api")]
     public class MoviesController : ControllerBase
     {
@@ -23,7 +25,7 @@ namespace Movies.API.Controllers
 
         [Authorize(AuthConstants.TrustedMemberPolicyName)]
         [HttpPost(ApiEndpoints.Movies.Create)]
-        public async Task<IActionResult> Create([FromBody]CreateMovieRequest request,
+        public async Task<IActionResult> Create([FromBody] CreateMovieRequest request,
             CancellationToken token)
         {
             var movie = request.MapToMovie();
@@ -33,6 +35,7 @@ namespace Movies.API.Controllers
             // I shouldn't return "movie" but rather map "movie" to a new MovieResponse object and return that. Only accept and return contracts
         }
 
+        [ApiVersion(1.0)]
         [HttpGet(ApiEndpoints.Movies.Get)]
         public async Task<IActionResult> Get([FromRoute] string idOrSlug,
             [FromServices] LinkGenerator linkGenerator,
