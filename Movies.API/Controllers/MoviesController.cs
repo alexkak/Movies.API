@@ -30,14 +30,13 @@ namespace Movies.API.Controllers
         {
             var movie = request.MapToMovie();
             await _movieService.CreateAsync(movie, token);
-            return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie);
+            return CreatedAtAction(nameof(GetV1), new { idOrSlug = movie.Id }, movie);
             //return Created($"/{ApiEndpoints.Movies.Create}/{movie.Id}", movie); 
             // I shouldn't return "movie" but rather map "movie" to a new MovieResponse object and return that. Only accept and return contracts
         }
 
-        [ApiVersion(1.0)]
         [HttpGet(ApiEndpoints.Movies.Get)]
-        public async Task<IActionResult> Get([FromRoute] string idOrSlug,
+        public async Task<IActionResult> GetV1([FromRoute] string idOrSlug,
             [FromServices] LinkGenerator linkGenerator,
             CancellationToken token)
         {
@@ -56,7 +55,7 @@ namespace Movies.API.Controllers
             var movieObj = new { id = movie.Id };
             response.Links.Add(new Link
             {
-                Href = linkGenerator.GetPathByAction(HttpContext, nameof(Get), values: new { idOrSlug = movie.Id}),
+                Href = linkGenerator.GetPathByAction(HttpContext, nameof(GetV1), values: new { idOrSlug = movie.Id}),
                 Rel = "self",
                 Type = "GET"
             });
