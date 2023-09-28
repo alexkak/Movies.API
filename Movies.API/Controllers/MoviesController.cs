@@ -38,6 +38,7 @@ namespace Movies.API.Controllers
         }
 
         [HttpGet(ApiEndpoints.Movies.Get)]
+        //[ResponseCache(Duration = 30, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
         [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetV1([FromRoute] string idOrSlug,
@@ -82,6 +83,7 @@ namespace Movies.API.Controllers
         }
 
         [HttpGet(ApiEndpoints.Movies.GetAll)]
+        //[ResponseCache(Duration = 30, VaryByQueryKeys = new[] {"title", "year", "sortBy", "page", "pageSize"}, VaryByHeader = "Accept, Accept-Encoding", Location = ResponseCacheLocation.Any)]
         [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request,
             CancellationToken token)
