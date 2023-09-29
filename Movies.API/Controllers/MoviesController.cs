@@ -20,9 +20,10 @@ namespace Movies.API.Controllers
         private readonly IMoviesService _movieService;
         private readonly IOutputCacheStore _outputCacheStore;
 
-        public MoviesController(IMoviesService movieService)
+        public MoviesController(IMoviesService movieService, IOutputCacheStore outputCacheStore)
         {
             _movieService = movieService;
+            _outputCacheStore = outputCacheStore;
         }
 
         [Authorize(AuthConstants.TrustedMemberPolicyName)]
