@@ -1,10 +1,21 @@
 ﻿
+using Microsoft.Extensions.DependencyInjection;
 using Movies.Api.Sdk;
 using Movies.Contracts.Requests;
 using Refit;
 using System.Text.Json;
 
-var moviesApi = RestService.For<IMoviesApi>("https://localhost:44318");
+//var moviesApi = RestService.For<IMoviesApi>("https://localhost:44318");
+
+var services = new ServiceCollection();
+
+services.AddRefitClient<IMoviesApi>()
+    .ConfigureHttpClient(x =>
+    x.BaseAddress = new Uri("https://localhost:44318"));
+
+var provider = services.BuildServiceProvider();
+
+var moviesApi = provider.GetRequiredService<IMoviesApi>();
 
 //var movie = await moviesApi.GetMovieAsync("d1b965ee-0a07-45f7-b809-5062b2097126");
 
