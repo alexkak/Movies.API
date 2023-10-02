@@ -1,4 +1,5 @@
-﻿using Movies.Contracts.Responses;
+﻿using Movies.Contracts.Requests;
+using Movies.Contracts.Responses;
 using Refit;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,9 @@ namespace Movies.Api.Sdk
     public interface IMoviesApi
     {
         [Get(ApiEndpoints.Movies.Get)]
-        Task<MovieResponse> GetMoviesAsync(string idOrSlug);
+        Task<MovieResponse> GetMovieAsync(string idOrSlug);
+
+        [Get(ApiEndpoints.Movies.GetAll)]
+        Task<MoviesResponse> GetMoviesAsync(GetAllMoviesRequest request);
     }
 }
