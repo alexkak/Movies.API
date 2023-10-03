@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.Extensions.DependencyInjection;
 using Movies.Api.Sdk;
+using Movies.Api.Sdk.Consumer;
 using Movies.Contracts.Requests;
 using Refit;
 using System.Text.Json;
@@ -9,7 +10,16 @@ using System.Text.Json;
 
 var services = new ServiceCollection();
 
-services.AddRefitClient<IMoviesApi>()
+//services.AddRefitClient<IMoviesApi>()
+//    .ConfigureHttpClient(x =>
+//    x.BaseAddress = new Uri("https://localhost:44318"));
+services
+    .AddHttpClient()
+    .AddSingleton<AuthTokenProvider>()
+    .AddRefitClient<IMoviesApi>(s => new RefitSettings
+    {
+        AuthorizationHeaderValueGetter = async(request, cancellationToken) => await s.GetRequiredService<AuthTokenProvider>().GetTokenAsync()
+    })
     .ConfigureHttpClient(x =>
     x.BaseAddress = new Uri("https://localhost:44318"));
 
@@ -17,7 +27,23 @@ var provider = services.BuildServiceProvider();
 
 var moviesApi = provider.GetRequiredService<IMoviesApi>();
 
-//var movie = await moviesApi.GetMovieAsync("d1b965ee-0a07-45f7-b809-5062b2097126");
+var movie = await moviesApi.GetMovieAsync("d1b965ee-0a07-45f7-b809-5062b2097126");
+
+var newMovie = await moviesApi.CreateMovieAsync(new CreateMovieRequest
+{
+    Title = "Spider-Man 2",
+    YearOfRelease = 2002,
+    Genres = new[] { "Action", "Adventure", "Sci-Fi" }
+});
+
+await moviesApi.UpdateMovieAsync(newMovie.Id, new UpdateMovieRequest
+{
+    Title = "Spider-Man 2",
+    YearOfRelease = 2004,
+    Genres = new[] { "Action", "Adventure", "Sci-Fi" }
+});
+
+await moviesApi.DeleteMovieAsync(newMovie.Id);
 
 var request = new GetAllMoviesRequest
 {
