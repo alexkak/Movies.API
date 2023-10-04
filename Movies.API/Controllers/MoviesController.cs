@@ -37,7 +37,8 @@ namespace Movies.API.Controllers
             var movie = request.MapToMovie();
             await _movieService.CreateAsync(movie, token);
             await _outputCacheStore.EvictByTagAsync("movies", token);
-            return CreatedAtAction(nameof(GetV1), new { idOrSlug = movie.Id }, movie);
+            var response = movie.MapToResponse();
+            return CreatedAtAction(nameof(GetV1), new { idOrSlug = movie.Id }, response);
             //return Created($"/{ApiEndpoints.Movies.Create}/{movie.Id}", movie); 
             // I shouldn't return "movie" but rather map "movie" to a new MovieResponse object and return that. Only accept and return contracts
         }
